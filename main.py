@@ -7,6 +7,15 @@ import spotipy
 from spotipy.oauth2 import SpotifyOAuth
 import re
 from PIL import Image
+from dotenv import load_dotenv
+
+load_dotenv()
+
+
+clientID = os.getenv("SPOTIPY_CLIENT_ID")
+clientSecretID = os.getenv("SPOTIPY_CLIENT_SECRET")
+redirectURI = os.getenv("SPOTIPY_REDIRECT_URI")
+
 
 class SearchBarApp:
 
@@ -27,7 +36,8 @@ class SearchBarApp:
             "apps": "ms-settings:appsfeatures",
             "power and sleep": "ms-settings:powersleep",
             "personalisation": "ms-settings:personalization",
-            "wiztree": r"C:\Program Files\WizTree\WizTree64.exe"
+            "wiztree": r"C:\Program Files\WizTree\WizTree64.exe",
+            "edge": r"C:\Program Files (x86)\Microsoft\Edge\Application\msedge.exe"
         }
 
 
@@ -53,17 +63,23 @@ class SearchBarApp:
             "power off": "Icons/settingIcon.png",
             "restart": "Icons/settingIcon.png",
             "reboot": "Icons/settingIcon.png",
-            "abort shutdown": "Icons/settingIcon.png"
+            "abort shutdown": "Icons/settingIcon.png",
+            "git": "Icons/gitIcon.png",
+            "edge": "Icons/edgeIcon.png",
+            "modrinth": "Icons/modrinthIcon.png",
+            "blender": "Icons/blenderIcon.png",
+            "python": "Icons/pythonIcon.png",
+            "c++": "Icons/cppIcon.png",
+            "pdf": "Icons/pdfIcon.png",
+            "word": "Icons/wordIcon.png"
+
         }
 
-        self.spotifyClientId = '09ed8cf13660402a89cec458587dff1f'
-        self.spotifyClientSecret = '8762c215354640eb8c8016aa41eeb8ac'
-        self.spotifyRedirectURI = 'http://127.0.0.1:8080/callback'
 
         self.sp = spotipy.Spotify(auth_manager=SpotifyOAuth(
-            client_id=self.spotifyClientId,
-            client_secret=self.spotifyClientSecret,
-            redirect_uri=self.spotifyRedirectURI,
+            client_id=clientID,
+            client_secret=clientSecretID,
+            redirect_uri=redirectURI,
             scope="user-modify-playback-state user-read-playback-state playlist-read-private"
         ))
 
@@ -117,7 +133,7 @@ class SearchBarApp:
     
         directories = [startMenu, systemMenu, desktopMenu, publicDesktopMenu, documentsFolder, cvFolder, personalProjects]
 
-        bannedSearches = ["uninstall", "setup", "update", "recovery", "administrative tools", "gh-pages", "__main__", "cli -"]
+        bannedSearches = ["uninstall", "setup", "update", "recovery", "administrative tools", "gh-pages", "__main__", "cli -", "microsoft edge", "edge bar", "wedge", "cfxr"]
         allowedExtensions = (".lnk", ".exe", ".png", ".pdf", ".docx", ".txt", ".jpg", ".jpeg", ".mp4", ".mp3", ".wav", ".avi", ".mkv", ".flv", ".mov", ".wmv", ".zip", ".rar", ".py", ".cs", ".css", ".html", ".js", ".c", ".blend")
     
         for i in directories:
@@ -204,6 +220,9 @@ class SearchBarApp:
 
         googleSearchQuery = searchQuery[1:].strip()
 
+        if(searchQuery == "quit"):
+            exit()
+
         if(searchQuery[0] == "?"):
         
             webbrowser.open(f"https://www.google.com/search?q={googleSearchQuery}")
@@ -264,10 +283,22 @@ class SearchBarApp:
 
             bravePath = r"C:\Program Files\BraveSoftware\Brave-Browser\Application\brave.exe"
 
+            bravePath = r"C:\Program Files\BraveSoftware\Brave-Browser\Application\brave.exe"
+            googlePath = r"C:\Program Files\Google\Chrome\Application\chrome.exe" 
+            edgePath = r"C:\Program Files (x86)\Microsoft\Edge\Application\msedge.exe" 
+
             try:
-                subprocess.Popen([bravePath, youtubeURL])
+                subprocess.Popen([bravePath, f"--app={youtubeURL}"])
             except FileNotFoundError:
-                webbrowser.open(youtubeURL)
+
+                try:
+                    subprocess.Popen([googlePath, f"--app={youtubeURL}"])
+                except FileNotFoundError:
+
+                    try:
+                        subprocess.Popen([edgePath, f"--app={youtubeURL}"])
+                    except FileNotFoundError:
+                        webbrowser.open(youtubeURL)
 
             self.searchBar.delete(0, tk.END)
             self.isHidden = True 
@@ -390,6 +421,20 @@ class SearchBarApp:
                         iconToLoad = self.iconPath[y]
                         break 
 
+                if(i.endswith(".py")):
+                    iconToLoad = self.iconPath["python"]
+                elif(i.endswith(".blend")):
+                    iconToLoad = self.iconPath["blender"]
+                elif(i.endswith(".cpp")):
+                    iconToLoad = self.iconPath["c++"]
+                elif(i.endswith(".docx")):
+                    iconToLoad = self.iconPath["word"]
+                elif(i.endswith(".pdf")):
+                    iconToLoad = self.iconPath["pdf"]
+                elif(i.endswith((".png", ".jpg", ".jpeg"))):
+                    iconToLoad = self.iconPath["backup"]
+
+                    
                 appIcon = tk.CTkImage(light_image=Image.open(iconToLoad), size=(24, 24))
 
                 iconLabel = tk.CTkLabel(resultRowFrame, text="", image=appIcon)

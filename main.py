@@ -8,6 +8,8 @@ from spotipy.oauth2 import SpotifyOAuth
 import re
 from PIL import Image
 from dotenv import load_dotenv
+import pyperclip 
+from collections import deque
 
 load_dotenv()
 
@@ -21,11 +23,13 @@ class SearchBarApp:
 
     def __init__(self):
 
+
+        # Update the following paths to match your system's configuration
         self.appPaths = {
             "spotify": "spotify", 
-            "vscode": r"C:\Users\fujitsu\AppData\Local\Programs\Microsoft VS Code\Code.exe",
-            "minecraft": r"C:\XboxGames\Minecraft Launcher\Content\Minecraft.exe",
-            "download": r"C:\Users\fujitsu\Downloads",
+            "vscode": os.path.join(os.environ["USERPROFILE"], r"AppData\Local\Programs\Microsoft VS Code\Code.exe"),
+            "minecraft": os.path.join(os.environ["APPDATA"], ".minecraft"),
+            "download": os.path.join(os.environ["USERPROFILE"], "Downloads"),
             "settings": "ms-settings:",
             "bluetooth": "ms-settings:bluetooth",
             "network": "ms-settings:network-status",
@@ -76,6 +80,7 @@ class SearchBarApp:
         }
 
 
+        # Make sure to create an .env to use spotify features. 
         self.sp = spotipy.Spotify(auth_manager=SpotifyOAuth(
             client_id=clientID,
             client_secret=clientSecretID,
@@ -90,6 +95,10 @@ class SearchBarApp:
         self.setupFrame() 
         self.initApps()
         self.bindKeys()
+
+        self.clipboardHistory = deque(maxlen=5)
+        self.lastCopiedString = ""
+        self.monitorClipboard()
 
 
     def setupFrame(self):
@@ -305,6 +314,7 @@ class SearchBarApp:
             self.app.withdraw() 
             return
 
+        
         if(searchQuery in ["shutdown", "power off"]):
             subprocess.call(["shutdown", "-s", "-t", "1"])
             self.searchBar.delete(0, tk.END)
@@ -399,7 +409,31 @@ class SearchBarApp:
             except Exception as e: 
                 return
                 
+        
+        if(searchQuery.startswith("clip")):
 
+            for i in reversed(self.clipboardHistory):
+
+                resultRowFrame = tk.CTkFrame(self.resultsFrame, width=500, height=35, fg_color="#2b2b2b")
+                resultRowFrame.pack(pady=2, fill="x")
+                resultRowFrame.pack_propagate(False)
+
+                displayText = ""
+
+                if(len(i) < 55):
+                    displayText = i 
+                else:
+                    displayText = i[:52] + "..."
+
+                name = tk.CTkLabel(resultRowFrame, text=displayText, text_color="white")
+                name.pack(side="left", padx=10)
+
+                for j in (resultRowFrame, name):
+                    j.bind("<Button-1>", lambda event, t=i: self.copyFromClipboardHistory(i))
+                    j.bind("<Enter>", lambda event, frame=resultRowFrame: frame.configure(fg_color="#565b5e"))
+                    j.bind("<Leave>", lambda event, frame=resultRowFrame: frame.configure(fg_color="#2b2b2b"))
+
+            return 
     
         matchingItems = 0
 
@@ -589,6 +623,43 @@ class SearchBarApp:
 
         except Exception as e:
             print(f"Error {e}")
+
+
+    def monitorClipboard(self):
+
+        try:
+
+            currentCopiedString = pyperclip.paste()
+
+            if(currentCopiedString and currentCopiedString != self.lastCopiedString):
+
+                self.clipboardHistory.append(currentCopiedString)
+                self.lastCopiedString = currentCopiedString
+
+        except:
+            pass 
+
+        self.app.after(1000, self.monitorClipboard)
+
+
+    def copyFromClipboardHistory(self, text):
+
+        pyperclip.copy(text) 
+        self.lastCopiedString = text 
+
+
+        self.searchBar.delete(0, tk.END)
+
+        for i in self.resultsFrame.winfo_children():
+            i.destroy()
+
+        self.app.withdraw()
+        self.isHidden = True 
+
+
+
+
+
 
 if(__name__ == "__main__"):
     searchBarLauncher = SearchBarApp()

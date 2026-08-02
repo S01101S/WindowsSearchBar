@@ -37,15 +37,15 @@ Trigger the search bar in Windows using the global hotkey: `Ctrl + Shift + Space
 
 | Command Syntax        | Action                                                                  | 
 | --------------------- | ----------------------------------------------------------------------- | 
-| clip                  | Displays the last 5 copied text items. Click to copy back to clipboard. |
-| ? <query>             | Performs a standard Google web search.                                  | 
-| yt <query>            | Opens a borderless YouTube app window with the search results.          | 
-| sp play / sp pause    | Controls active Spotify playback.                                       | 
-| sp next / sp previous | Skips to the next or previous song                                      |
-| sp song <name>        | Searches Spotify for a song and instantly plays the top result.         |
-| sp artist <name>      | Searchesf for an artist and begins playback.                            |
-| sp <playlist name>    | searches your personal Spotify library and plays a matching playlist    |
-| shutdown / reboot     | Executes a windows power command (with a 1 seconds delay).              |
+| `clip`                  | Displays the last 5 copied text items. Click to copy back to clipboard. |
+| `? <query>`             | Performs a standard Google web search.                                  | 
+| `yt <query>`            | Opens a borderless YouTube app window with the search results.          | 
+| `sp play / sp pause`    | Controls active Spotify playback.                                       | 
+| `sp next / sp previous` | Skips to the next or previous song                                      |
+| `sp song <name>`        | Searches Spotify for a song and instantly plays the top result.         |
+| `sp artist <name>`      | Searchesf for an artist and begins playback.                            |
+| `sp <playlist name>`    | searches your personal Spotify library and plays a matching playlist    |
+| `shutdown / reboot`     | Executes a windows power command (with a 1 seconds delay).              |
 
 
 

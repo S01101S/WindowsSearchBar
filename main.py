@@ -501,7 +501,7 @@ class SearchBarApp:
     def bindKeys(self):
 
         self.searchBar.bind("<KeyRelease>", self.resultFrameSearches)
-        keyboard.add_hotkey('ctrl+shift+space', self.toggleSearchBar, suppress=True)
+        keyboard.add_hotkey('ctrl+shift+space', self.toggleSearchBar)
         self.searchBar.bind("<Return>", self.spaceKey)
         self.app.bind("<FocusOut>", self.emptyClick)
 
